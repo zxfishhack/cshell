@@ -1,4 +1,4 @@
-all: darwin-amd64 darwin-arm64
+all: darwin-arm64 darwin-amd64
 	rm -rf cshell.app
 
 common:
