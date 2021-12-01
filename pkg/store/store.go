@@ -228,7 +228,7 @@ func SaveHostKV(hostId string, newHostId string, kv []*ssh_config.KV) (update bo
 }
 
 func GetHostTags(hostId string) (res []string) {
-	result := db.Find(&model.HostAlias{Name: hostId})
+	result := db.Find(&model.HostAlias{}, model.HostAlias{Name: hostId})
 	if result.Error != nil {
 		return
 	}
