@@ -3,10 +3,10 @@ package tray
 import (
 	"context"
 	"fmt"
-	"github.com/getlantern/systray"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/zxfishhack/cshell/pkg/icon"
 	"github.com/zxfishhack/cshell/pkg/store"
+	"github.com/zxfishhack/cshell/pkg/systray"
 	"github.com/zxfishhack/cshell/pkg/utils"
 	"golang.org/x/sync/errgroup"
 	"log"

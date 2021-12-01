@@ -7,7 +7,6 @@ package flate
 import (
 	"math"
 	"math/bits"
-	"sort"
 )
 
 const (
@@ -22,11 +21,13 @@ type hcode struct {
 }
 
 type huffmanEncoder struct {
-	codes     []hcode
-	freqcache []literalNode
-	bitCount  [17]int32
-	lns       byLiteral // stored to avoid repeated allocation in generate
-	lfs       byFreq    // stored to avoid repeated allocation in generate
+	codes    []hcode
+	bitCount [17]int32
+
+	// Allocate a reusable buffer with the longest possible frequency table.
+	// Possible lengths are codegenCodeCount, offsetCodeCount and literalCount.
+	// The largest of these is literalCount, so we allocate for that case.
+	freqcache [literalCount + 1]literalNode
 }
 
 type literalNode struct {
@@ -112,14 +113,39 @@ func generateFixedOffsetEncoding() *huffmanEncoder {
 	return h
 }
 
-var fixedLiteralEncoding *huffmanEncoder = generateFixedLiteralEncoding()
-var fixedOffsetEncoding *huffmanEncoder = generateFixedOffsetEncoding()
+var fixedLiteralEncoding = generateFixedLiteralEncoding()
+var fixedOffsetEncoding = generateFixedOffsetEncoding()
 
 func (h *huffmanEncoder) bitLength(freq []uint16) int {
 	var total int
 	for i, f := range freq {
 		if f != 0 {
 			total += int(f) * int(h.codes[i].len)
+		}
+	}
+	return total
+}
+
+func (h *huffmanEncoder) bitLengthRaw(b []byte) int {
+	var total int
+	for _, f := range b {
+		if f != 0 {
+			total += int(h.codes[f].len)
+		}
+	}
+	return total
+}
+
+// canReuseBits returns the number of bits or math.MaxInt32 if the encoder cannot be reused.
+func (h *huffmanEncoder) canReuseBits(freq []uint16) int {
+	var total int
+	for i, f := range freq {
+		if f != 0 {
+			code := h.codes[i]
+			if code.len == 0 {
+				return math.MaxInt32
+			}
+			total += int(f) * int(code.len)
 		}
 	}
 	return total
@@ -270,7 +296,7 @@ func (h *huffmanEncoder) assignEncodingAndSize(bitCount []int32, list []literalN
 		// assigned in literal order (not frequency order).
 		chunk := list[len(list)-int(bits):]
 
-		h.lns.sort(chunk)
+		sortByLiteral(chunk)
 		for _, node := range chunk {
 			h.codes[node.literal] = hcode{code: reverseBits(code, uint8(n)), len: uint16(n)}
 			code++
@@ -284,12 +310,6 @@ func (h *huffmanEncoder) assignEncodingAndSize(bitCount []int32, list []literalN
 // freq  An array of frequencies, in which frequency[i] gives the frequency of literal i.
 // maxBits  The maximum number of bits to use for any literal.
 func (h *huffmanEncoder) generate(freq []uint16, maxBits int32) {
-	if h.freqcache == nil {
-		// Allocate a reusable buffer with the longest possible frequency table.
-		// Possible lengths are codegenCodeCount, offsetCodeCount and literalCount.
-		// The largest of these is literalCount, so we allocate for that case.
-		h.freqcache = make([]literalNode, literalCount+1)
-	}
 	list := h.freqcache[:len(freq)+1]
 	// Number of non-zero literals
 	count := 0
@@ -315,7 +335,7 @@ func (h *huffmanEncoder) generate(freq []uint16, maxBits int32) {
 		}
 		return
 	}
-	h.lfs.sort(list)
+	sortByFreq(list)
 
 	// Get the number of literals for each bit count
 	bitCount := h.bitCounts(list, maxBits)
@@ -323,59 +343,32 @@ func (h *huffmanEncoder) generate(freq []uint16, maxBits int32) {
 	h.assignEncodingAndSize(bitCount, list)
 }
 
-type byLiteral []literalNode
-
-func (s *byLiteral) sort(a []literalNode) {
-	*s = byLiteral(a)
-	sort.Sort(s)
-}
-
-func (s byLiteral) Len() int { return len(s) }
-
-func (s byLiteral) Less(i, j int) bool {
-	return s[i].literal < s[j].literal
-}
-
-func (s byLiteral) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-
-type byFreq []literalNode
-
-func (s *byFreq) sort(a []literalNode) {
-	*s = byFreq(a)
-	sort.Sort(s)
-}
-
-func (s byFreq) Len() int { return len(s) }
-
-func (s byFreq) Less(i, j int) bool {
-	if s[i].freq == s[j].freq {
-		return s[i].literal < s[j].literal
+// atLeastOne clamps the result between 1 and 15.
+func atLeastOne(v float32) float32 {
+	if v < 1 {
+		return 1
 	}
-	return s[i].freq < s[j].freq
+	if v > 15 {
+		return 15
+	}
+	return v
 }
 
-func (s byFreq) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-
-// histogramSize accumulates a histogram of b in h.
-// An estimated size in bits is returned.
 // Unassigned values are assigned '1' in the histogram.
-// len(h) must be >= 256, and h's elements must be all zeroes.
-func histogramSize(b []byte, h []uint16, fill bool) int {
+func fillHist(b []uint16) {
+	for i, v := range b {
+		if v == 0 {
+			b[i] = 1
+		}
+	}
+}
+
+func histogram(b []byte, h []uint16, fill bool) {
 	h = h[:256]
 	for _, t := range b {
 		h[t]++
 	}
-	invTotal := 1.0 / float64(len(b))
-	shannon := 0.0
-	single := math.Ceil(-math.Log2(invTotal))
-	for i, v := range h[:] {
-		if v > 0 {
-			n := float64(v)
-			shannon += math.Ceil(-math.Log2(n*invTotal) * n)
-		} else if fill {
-			shannon += single
-			h[i] = 1
-		}
+	if fill {
+		fillHist(h)
 	}
-	return int(shannon + 0.99)
 }
