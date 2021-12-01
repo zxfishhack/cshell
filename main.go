@@ -11,6 +11,8 @@ import (
 	"log"
 )
 
+//go:generate go-bindata -pkg icon -tags "linux darwin" -o pkg/icon/iconunix.go -prefix icon icon
+
 func main() {
 	err := store.Init()
 	if err != nil {
@@ -23,10 +25,10 @@ func main() {
 func onReady() {
 	hosts := store.GetSSHHostList()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	g, _ := errgroup.WithContext(ctx)
+	ctxWithCancel, cancel := context.WithCancel(context.Background())
+	g, ctx := errgroup.WithContext(ctxWithCancel)
 
-	systray.SetTemplateIcon(icon.Data, icon.Data)
+	systray.SetTemplateIcon(icon.MustAsset("icon.png"), icon.MustAsset("icon.png"))
 	systray.SetTooltip("CShell")
 	for _, host := range hosts {
 		item := systray.AddMenuItem(host, fmt.Sprintf("ssh %s ...", host))
@@ -45,6 +47,22 @@ func onReady() {
 			})
 		}(host)
 	}
+
+	systray.AddSeparator()
+
+	mConfig := systray.AddMenuItem("配置", "")
+	g.Go(func() error {
+		for {
+			select {
+			case <-ctx.Done():
+				return nil
+			case <-mConfig.ClickedCh:
+				log.Print("config")
+			}
+		}
+	})
+
+	systray.AddSeparator()
 
 	mQuit := systray.AddMenuItem("退出", "")
 	go func() {
