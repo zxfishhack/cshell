@@ -6,6 +6,6 @@ import (
 )
 
 func TestOpenSSH(t *testing.T) {
-	err := OpenSSH("rancher")
+	err := OpenSSH(DefaultTerminal, "rancher")
 	assert.NilError(t, err)
 }

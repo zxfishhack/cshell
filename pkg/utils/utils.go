@@ -28,9 +28,24 @@ tell application "iTerm2"
 end tell
 `
 
-func OpenSSH(name string) (err error) {
+type TerminalType string
+
+const (
+	DefaultTerminal TerminalType = "Terminal"
+	ITerm2                       = "iTerm2"
+)
+
+func OpenSSH(termType TerminalType, name string) (err error) {
 	fn := filepath.Join(os.TempDir(), "run")
-	script := fmt.Sprintf(iTerm2Script, name)
+	script := ""
+	switch termType {
+	case ITerm2:
+		script = fmt.Sprintf(iTerm2Script, name)
+	case DefaultTerminal:
+		script = fmt.Sprintf(terminalScript, name)
+	default:
+		script = fmt.Sprintf(terminalScript, name)
+	}
 	_ = ioutil.WriteFile(fn, []byte(script), 0755)
 	cmd := exec.Command("osascript", fn)
 	err = cmd.Start()

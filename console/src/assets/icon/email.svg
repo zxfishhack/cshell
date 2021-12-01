@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="12px" viewBox="0 0 16 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>邮箱</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="头像下拉" transform="translate(-980.000000, -197.000000)" fill="#000000" fill-rule="nonzero">
+            <g id="编组-10" transform="translate(964.000000, 45.000000)">
+                <g id="邮箱" transform="translate(16.000000, 150.000000)">
+                    <rect id="矩形" opacity="0" x="0" y="0" width="16" height="16"></rect>
+                    <polygon id="路径" fill-opacity="0.85" points="15.5294118 4.23529413 8 8 0.470588234 4.23529412 0.470588234 2.35294117 15.5294118 2.35294117"></polygon>
+                    <polygon id="路径" fill-opacity="0.85" points="0.470588234 5.53677325 0.470588234 13.6470588 15.5294118 13.6470588 15.5294118 5.53677325 8 9.30147912"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

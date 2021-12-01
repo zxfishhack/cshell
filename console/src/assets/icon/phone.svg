@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="16px" viewBox="0 0 12 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>手机</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="头像下拉" transform="translate(-982.000000, -165.000000)" fill="#000000" fill-rule="nonzero">
+            <g id="编组-10" transform="translate(964.000000, 45.000000)">
+                <g id="手机" transform="translate(16.000000, 120.000000)">
+                    <rect id="矩形" opacity="0" x="0" y="0" width="16" height="16"></rect>
+                    <path d="M14,0 L14,16 L2,16 L2,0 L14,0 Z M8,13 C7.44771525,13 7,13.4477153 7,14 C7,14.5522847 7.44771525,15 8,15 C8.55228475,15 9,14.5522847 9,14 C9,13.4477153 8.55228475,13 8,13 Z M12,3 L4,3 L4,12 L12,12 L12,3 Z M11.5,1 C11.2238576,1 11,1.22385763 11,1.5 C11,1.77614237 11.2238576,2 11.5,2 C11.7761424,2 12,1.77614237 12,1.5 C12,1.22385763 11.7761424,1 11.5,1 Z M9,1 L4,1 L4,2 L9,2 L9,1 Z" id="形状结合" fill-opacity="0.85"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

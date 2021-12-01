@@ -1,7 +1,7 @@
 package sshc
 
 import (
-	"github.com/kevinburke/ssh_config"
+	"github.com/zxfishhack/ssh_config"
 	"io/ioutil"
 	"os"
 	"sync"

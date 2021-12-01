@@ -112,6 +112,11 @@ withParentMenuId: (int)theParentMenuId
   systray_menu_item_selected(menuId.intValue);
 }
 
+- (void)clear_all_menu_item {
+  NSMenu *theMenu = self->menu;
+  [theMenu removeAllItems];
+}
+
 - (void)add_or_update_menu_item:(MenuItem *)item {
   NSMenu *theMenu = self->menu;
   NSMenuItem *parentItem;
@@ -264,6 +269,10 @@ void setTooltip(char* ctooltip) {
                                                encoding:NSUTF8StringEncoding];
   free(ctooltip);
   runInMainThread(@selector(setTooltip:), (id)tooltip);
+}
+
+void clear_all_menu_item() {
+  runInMainThread(@selector(clear_all_menu_item), nil);
 }
 
 void add_or_update_menu_item(int menuId, int parentMenuId, char* title, char* tooltip, short disabled, short checked, short isCheckable) {
