@@ -2,6 +2,7 @@ all: darwin-arm64 darwin-amd64
 	rm -rf cshell.app
 
 common:
+	go generate main.go
 	rm -rf cshell.app
 	mkdir -p cshell.app/Contents/MacOS
 	mkdir -p cshell.app/Contents/Resources

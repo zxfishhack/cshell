@@ -35,6 +35,24 @@
               <el-option v-for="k in keys" :value="k" :key="k"></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item>
+            <template slot="label">
+              <div style="display: flex; flex-direction: column">
+                <span>代理主机</span>
+                <span style="opacity: 0.5; font-size: 6px">ProxyJump</span>
+              </div>
+            </template>
+            <el-input v-model="config.f.ProxyJump"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <template slot="label">
+              <div style="display: flex; flex-direction: column">
+                <span>代理命令</span>
+                <span style="opacity: 0.5; font-size: 6px">ProxyCommand</span>
+              </div>
+            </template>
+            <el-input v-model="config.f.ProxyCommand"></el-input>
+          </el-form-item>
           <el-form-item label="额外配置">
             <el-row v-for="(_, idx) in addition" :key="idx">
               <el-col :span="21">
@@ -78,7 +96,9 @@ export default class Editor extends Vue {
       UseKeychain: 'no',
       AddKeysToAgent: 'no',
       IdentityFile: '',
-      Port: ''
+      Port: '',
+      ProxyJump: '',
+      ProxyCommand: ''
     } }
   addition: any[] = []
   get editHostId() {
@@ -90,7 +110,7 @@ export default class Editor extends Vue {
 
   confirmDel = false
 
-  specialKeys = ['User', 'HostName', 'UseKeychain', 'AddKeysToAgent', 'IdentityFile', 'Port']
+  specialKeys = ['User', 'HostName', 'UseKeychain', 'AddKeysToAgent', 'IdentityFile', 'Port', 'ProxyJump', 'ProxyCommand']
   special = new Set(this.specialKeys.map(v => v.toLowerCase()))
 
   @Watch('editHostId')
