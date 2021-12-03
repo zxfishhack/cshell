@@ -6,12 +6,12 @@ import (
 
 type HostAlias struct {
 	gorm.Model
-	Name string
-	Tag  string
+	Name string `gorm:"index:name_tag"`
+	Tag  string `gorm:"index:name_tag"`
 }
 
 type HostVisible struct {
 	gorm.Model
-	Name    string
+	Name    string `gorm:"index:name"`
 	Visible bool
 }

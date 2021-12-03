@@ -4,6 +4,6 @@ import "gorm.io/gorm"
 
 type Config struct {
 	gorm.Model
-	Key   string
+	Key   string `gorm:"config_key"`
 	Value string
 }

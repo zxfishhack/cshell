@@ -18,7 +18,7 @@ func fixData() {
 
 func fixHostVisible(check map[string]bool) {
 	ids := make([]uint, 0)
-	result := db.Find(&model.HostVisible{})
+	result := db.Model(&model.HostVisible{})
 	if result.Error != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func fixHostVisible(check map[string]bool) {
 		}
 	}
 	for _, id := range ids {
-		db.Delete(&model.HostVisible{
+		db.Delete(&model.HostVisible{}, model.HostVisible{
 			Model: gorm.Model{ID: id},
 		})
 	}
@@ -43,7 +43,7 @@ func fixHostVisible(check map[string]bool) {
 
 func fixHostAlias(check map[string]bool) {
 	ids := make([]uint, 0)
-	result := db.Find(&model.HostAlias{})
+	result := db.Model(&model.HostAlias{})
 	if result.Error != nil {
 		return
 	}
@@ -60,7 +60,7 @@ func fixHostAlias(check map[string]bool) {
 		}
 	}
 	for _, id := range ids {
-		db.Delete(&model.HostAlias{
+		db.Delete(&model.HostAlias{}, &model.HostAlias{
 			Model: gorm.Model{ID: id},
 		})
 	}

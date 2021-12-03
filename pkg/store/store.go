@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -68,7 +69,7 @@ func SetTerminalType(typ utils.TerminalType) (err error) {
 }
 
 func GetTagList() (tags []string) {
-	result := db.Find(&model.Tag{})
+	result := db.Model(&model.Tag{})
 	if result.Error != nil {
 		return
 	}
@@ -144,7 +145,7 @@ func GetSSHHostList(tag string, all bool) (hosts []string) {
 		}
 		return
 	}
-	result := db.Find(&model.HostAlias{}, model.HostAlias{Tag: tag})
+	result := db.Model(&model.HostAlias{}).Where(model.HostAlias{Tag: tag})
 	if result.Error != nil {
 		return
 	}
@@ -228,7 +229,7 @@ func SaveHostKV(hostId string, newHostId string, kv []*ssh_config.KV) (update bo
 }
 
 func GetHostTags(hostId string) (res []string) {
-	result := db.Find(&model.HostAlias{}, model.HostAlias{Name: hostId})
+	result := db.Model(&model.HostAlias{}).Where(model.HostAlias{Name: hostId})
 	if result.Error != nil {
 		return
 	}
@@ -257,12 +258,14 @@ func SaveHostTags(hostId string, tags []string) (updated bool) {
 		db.Create(&model.HostAlias{Name: hostId, Tag: tag})
 	}
 	for _, tag := range removeTags {
-		db.Delete(&model.HostAlias{Name: hostId, Tag: tag})
+		db.Delete(&model.HostAlias{}, model.HostAlias{Name: hostId, Tag: tag})
 	}
 	addTags = diff(tags, GetTagList())
+	var err error
 	for _, tag := range addTags {
-		db.Create(&model.Tag{Name: tag})
+		err = db.Create(&model.Tag{Name: tag}).Error
 	}
+	log.Print(err)
 	return
 }
 
