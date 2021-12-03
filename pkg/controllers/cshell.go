@@ -49,9 +49,9 @@ func (c *CShellController) PostHostByConfig(hostId string) {
 		return
 	}
 	update := false
-	update = update || store.SaveHostKV(hostId, hc.Host, hc.Items)
-	update = update || store.SaveHostTags(hostId, hc.Tags)
-	update = update || store.SetHostVisible(hostId, hc.Visible)
+	update = store.SaveHostKV(hostId, hc.Host, hc.Items) || update
+	update = store.SaveHostTags(hostId, hc.Tags) || update
+	update = store.SetHostVisible(hostId, hc.Visible) || update
 	update = update || (hostId != hc.Host)
 	if hostId != hc.Host {
 		store.ChangeName(hostId, hc.Host)
