@@ -1,4 +1,6 @@
+//+build darwin
 //go:build darwin
+// +build darwin
 
 package utils
 
