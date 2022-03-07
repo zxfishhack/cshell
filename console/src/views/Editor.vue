@@ -123,7 +123,9 @@ export default class Editor extends Vue {
         UseKeychain: 'no',
         AddKeysToAgent: 'no',
         IdentityFile: '',
-        Port: ''
+        Port: '',
+        ProxyJump: '',
+        ProxyCommand: ''
       } }
     if (!!this.editHostId) {
       const res : any = await Service.getHostConfig(this.editHostId)
