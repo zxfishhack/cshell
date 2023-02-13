@@ -71,6 +71,7 @@ func Execute(tagList, hostList []string, password string, cmd []string) (err err
 	signers := make(map[string]ssh.Signer)
 	log.Printf("ready to execute command [%s] on remote [%s]",
 		strings.Join(cmd, " "), strings.Join(filterHosts, ","))
+	var wg sync.WaitGroup
 	for _, h := range filterHosts {
 		res := store.GetHostKV(h)
 		hostname := h
@@ -108,7 +109,7 @@ func Execute(tagList, hostList []string, password string, cmd []string) (err err
 					if signer, e = ssh.ParsePrivateKeyWithPassphrase(b, []byte(password)); e == nil {
 						signers[fn] = signer
 					} else if errors.Is(e, x509.IncorrectPasswordError) {
-						fmt.Printf("please enter passsword for identity file %s [%s]:", idFile, fn)
+						fmt.Printf("please enter passphrase for identity file %s [%s]:", idFile, fn)
 						outputMtx.Lock()
 						if passwd, e := terminal.ReadPassword(int(os.Stdin.Fd())); e == nil {
 							if signer, e = ssh.ParsePrivateKeyWithPassphrase(b, passwd); e == nil {
@@ -117,6 +118,7 @@ func Execute(tagList, hostList []string, password string, cmd []string) (err err
 								log.Printf("parse private key [%s] failed %s", idFile, e.Error())
 							}
 						}
+						fmt.Println()
 						outputMtx.Unlock()
 					}
 				} else {
@@ -138,6 +140,7 @@ func Execute(tagList, hostList []string, password string, cmd []string) (err err
 			defer outputMtx.Unlock()
 			fmt.Printf("please enter passsword for host %s [%s]:", h, hostname)
 			passwd, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+			fmt.Println()
 			return string(passwd), err
 		}))
 		conf := &ssh.ClientConfig{
@@ -147,11 +150,16 @@ func Execute(tagList, hostList []string, password string, cmd []string) (err err
 				return nil
 			},
 		}
-		if err = sshCmd(conf, fmt.Sprintf("%s:%d", hostname, port), h, cmd); err != nil {
-			log.Printf("ERROR: execute command on %s [%s:%d] failed %s.", h, hostname, port, err.Error())
-		}
+		wg.Add(1)
+		go func(conf *ssh.ClientConfig, addr, host string) {
+			defer wg.Done()
+			if e := sshCmd(conf, addr, host, cmd); e != nil {
+				log.Printf("ERROR: execute command on %s [%s] failed %s.", host, addr, e.Error())
+			}
+		}(conf, fmt.Sprintf("%s:%d", hostname, port), h)
 	}
 	err = nil
+	wg.Wait()
 	return
 }
 
