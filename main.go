@@ -7,7 +7,6 @@ import (
 	"log"
 )
 
-//go:generate go-bindata -pkg icon -tags "linux darwin" -o pkg/icon/iconunix.go -prefix icon icon
 //go:generate go-bindata -pkg resources -o pkg/resources/resouces.go -prefix console/dist console/dist/...
 func main() {
 	err := store.Init()

@@ -21,7 +21,12 @@ var sshConfig *ssh_config.Config
 var db *gorm.DB
 
 func Init() (err error) {
-	db, err = gorm.Open(sqlite.Open(filepath.Join(os.Getenv("HOME"), ".ssh", ".cshell")),
+	h, err := os.UserHomeDir()
+	if err != nil {
+		return
+	}
+	dbPath := filepath.Join(h, ".ssh", ".cshell")
+	db, err = gorm.Open(sqlite.Open(dbPath),
 		&gorm.Config{Logger: logger.Discard})
 	if err != nil {
 		return
@@ -41,7 +46,11 @@ func Init() (err error) {
 }
 
 func Reload() (err error) {
-	sshConfig, err = sshc.LoadSSHConfig(filepath.Join(os.Getenv("HOME"), ".ssh", "config"))
+	h, err := os.UserHomeDir()
+	if err != nil {
+		return
+	}
+	sshConfig, err = sshc.LoadSSHConfig(filepath.Join(h, ".ssh", "config"))
 	if err != nil {
 		return
 	}
@@ -52,7 +61,11 @@ func Reload() (err error) {
 }
 
 func SaveSSHConfig() (err error) {
-	return sshc.SaveSSHConfig(filepath.Join(os.Getenv("HOME"), ".ssh", "config"), sshConfig)
+	h, err := os.UserHomeDir()
+	if err != nil {
+		return
+	}
+	return sshc.SaveSSHConfig(filepath.Join(h, ".ssh", "config"), sshConfig)
 }
 
 func GetTerminalType() utils.TerminalType {
@@ -303,7 +316,14 @@ func GetKeys() (res []string) {
 			}
 		}
 	}
-	filepath.Walk(filepath.Join(os.Getenv("HOME"), ".ssh", "keys"), func(path string, info fs.FileInfo, err error) error {
+	h, err := os.UserHomeDir()
+	if err != nil {
+		return
+	}
+	filepath.Walk(filepath.Join(h, ".ssh", "keys"), func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
 		if info.IsDir() {
 			return nil
 		}
@@ -311,7 +331,7 @@ func GetKeys() (res []string) {
 		if strings.HasSuffix(path, ".pub") {
 			return nil
 		}
-		keys[strings.Replace(path, os.Getenv("HOME"), "~", 1)] = true
+		keys[strings.Replace(path, h, "~", 1)] = true
 		return nil
 	})
 	for k := range keys {

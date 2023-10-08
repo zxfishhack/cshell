@@ -89,7 +89,7 @@ func (t *Tray) render() {
 
 func (t *Tray) Run() (err error) {
 	systray.Run(func() {
-		systray.SetTemplateIcon(icon.MustAsset("icon.png"), icon.MustAsset("icon.png"))
+		systray.SetTemplateIcon(icon.Icon, icon.Icon)
 		systray.SetTooltip("CShell")
 		t.render()
 	}, nil)

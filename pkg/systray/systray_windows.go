@@ -3,6 +3,7 @@
 
 package systray
 
+import "C"
 import (
 	"crypto/md5"
 	"encoding/hex"
@@ -35,6 +36,7 @@ var (
 	u32                    = windows.NewLazySystemDLL("User32.dll")
 	pCreateMenu            = u32.NewProc("CreateMenu")
 	pCreatePopupMenu       = u32.NewProc("CreatePopupMenu")
+	pDestroyMenu           = u32.NewProc("DestroyMenu")
 	pCreateWindowEx        = u32.NewProc("CreateWindowExW")
 	pDefWindowProc         = u32.NewProc("DefWindowProcW")
 	pDeleteMenu            = u32.NewProc("DeleteMenu")
@@ -462,6 +464,13 @@ func (t *winTray) createMenu() error {
 		return err
 	}
 	return nil
+}
+
+func (t *winTray) destroyMenu() {
+	_, _, _ = pDestroyMenu.Call(
+		uintptr(t.menus[0]),
+	)
+	t.menus = make(map[uint32]windows.Handle)
 }
 
 func (t *winTray) convertToSubMenu(menuItemId uint32) (windows.Handle, error) {
@@ -937,4 +946,9 @@ func hideMenuItem(item *MenuItem) {
 
 func showMenuItem(item *MenuItem) {
 	addOrUpdateMenuItem(item)
+}
+
+func ClearAllMenuItem() {
+	wt.destroyMenu()
+	wt.createMenu()
 }
