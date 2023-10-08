@@ -10,7 +10,7 @@ common:
 	cp icon.icns cshell.app/Contents/Resources
 
 darwin-amd64: common
-	GOARCH=amd64 go build -o cshell.app/Contents/MacOS/cshell .
+	CGO_ENABLED=1 GOARCH=amd64 go build -o cshell.app/Contents/MacOS/cshell .
 	zip -r cshell.amd64.zip cshell.app
 
 darwin-arm64: common
