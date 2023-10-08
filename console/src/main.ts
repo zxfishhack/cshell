@@ -11,8 +11,6 @@ import '@/assets/styles/index.scss'
 import '@/components/MilkVue'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/styles/theme/default.scss'
-import { getModule } from 'vuex-module-decorators'
-import { Hosts } from '@/store/modules/hosts'
 
 Vue.config.productionTip = false
 

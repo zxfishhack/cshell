@@ -16,6 +16,10 @@ func (*CShellController) GetHostList() []string {
 	return store.GetSSHHostList("", true)
 }
 
+func (*CShellController) GetHostListTagBy(tag string) []string {
+	return store.GetSSHHostList(tag, true)
+}
+
 func (*CShellController) GetKeys() []string {
 	if v := store.GetKeys(); v == nil {
 		return make([]string, 0)

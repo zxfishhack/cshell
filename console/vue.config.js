@@ -18,7 +18,7 @@ module.exports = {
     },
     progress: false,
     proxy: {
-      '/': {
+      '/cshell': {
         target: process.env.VUE_APP_BASE_HOST,
         changeOrigin: true,
         debug: true

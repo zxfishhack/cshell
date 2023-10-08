@@ -3,12 +3,12 @@
   line-height: 60px;
 }
 
-.el-menu {
-  height: 100%;
-}
-
 .el-aside {
-  width: 200px;
+  display: flex;
+  flex-direction: column;
+  .el-menu {
+    flex: 1;
+  }
 }
 
 .el-main {

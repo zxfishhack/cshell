@@ -84,6 +84,8 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import Service from '@/service'
+import { getModule } from 'vuex-module-decorators'
+import { Hosts } from '@/store/modules/hosts'
 
 @Component({
     name: 'Editor',
@@ -166,8 +168,7 @@ export default class Editor extends Vue {
 
   async deleteHost() {
     await Service.deleteHostConfig(this.editHostId)
-    const hosts = await Service.getSSHHosts()
-    this.$store.state.hosts.List = hosts
+    await getModule(Hosts, this.$store).updateList()
     this.$nextTick(() => {
       this.$router.push('/')
     })
@@ -186,8 +187,7 @@ export default class Editor extends Vue {
       message: '保存成功。'
     })
     if (this.editHostId !== this.config.host) {
-      const hosts = await Service.getSSHHosts()
-      this.$store.state.hosts.List = hosts
+      await getModule(Hosts, this.$store).updateList()
       this.$nextTick(() => {
         this.$router.push(`/edit/${this.config.host}`)
       })

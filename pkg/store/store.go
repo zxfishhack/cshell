@@ -69,6 +69,7 @@ func SetTerminalType(typ utils.TerminalType) (err error) {
 }
 
 func GetTagList() (tags []string) {
+	tags = make([]string, 0)
 	result := db.Model(&model.Tag{})
 	if result.Error != nil {
 		return
@@ -132,6 +133,7 @@ func SetHostVisible(name string, visible bool) (update bool) {
 }
 
 func GetSSHHostList(tag string, all bool) (hosts []string) {
+	hosts = make([]string, 0)
 	if tag == "" {
 		if sshConfig != nil {
 			for _, v := range sshConfig.Hosts {

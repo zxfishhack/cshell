@@ -1,7 +1,10 @@
 import Server from './server'
 export default {
-  getSSHHosts() {
+  getSSHHosts(): Promise<string[]> {
     return Server.get('/cshell/host/list')
+  },
+  getSSHHostsByTag(tag: string): Promise<string[]> {
+    return Server.get(`/cshell/host/list/tag/${tag}`)
   },
   getHostConfig(hostId: string) {
     return Server.get(`/cshell/host/${hostId}/config`)
