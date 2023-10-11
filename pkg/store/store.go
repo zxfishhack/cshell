@@ -209,6 +209,9 @@ func SaveHostKV(hostId string, newHostId string, kv []*ssh_config.KV) (update bo
 			host.Nodes = make([]ssh_config.Node, 0)
 			for _, i := range kv {
 				i.SetLeadingSpace(4)
+				if i.Key == "UseKeyChain" && !useKeyChain {
+					continue
+				}
 				host.Nodes = append(host.Nodes, i)
 			}
 			if newHostId != hostId {
